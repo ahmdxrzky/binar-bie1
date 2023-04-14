@@ -1,5 +1,18 @@
-# Problem Statement
-Pattern of weather is getting more difficult to be identified year by year. Usually, Indonesian people could certain that the dry season would occur from March to September and the rainy season on the other hand. Now, we can no longer use this knowledge as reference. Therefore, I am interested to build this project in order to answer the question of _whether there have been changes in weather patterns in Denpasar or not_.
+# Project Overview
+This project is a Business Intelligence Project that creates dashboard to give monitorization to Marketing and Sales Department upon product sales, region performance, and target achievement periodically. By finishing this project, we hope we can replace project consolidation process that done manually along the time and provide a dashboard that accessible by all of the region manager to monitor and evaluate performance of their region.
+
+# Project Objectives
+Objective of creation of this dashboard is to give end-to-end visualization to Marketing and Sales Department upon product sales in all region and also to give monitorization privilege about sales in certain period.
+
+# Technical Design Diagram
+## Components
+- Connection & Location
+  Data Source for this project is located on 
+  Data Source atau sumber data untuk proyek ini terletak pada Data Lake perusahaan yang berada pada RDBMS SQL Server. Data Lake ini dapat diakses pada server perusahaan dengan IP Address 34.101.194.202 pada port 1433. Ada 3 database dari Data Lake yang digunakan pada proyek ini, yaitu database Customers (berisi identitas customer), Categories (berisi detail produk), dan Orders (berisi riwayat pesanan).
+Server & Storage
+Data Warehouse yang digunakan untuk menyimpan data adalah Google BigQuery yang diakses dengan akun Google perusahaan. Proyek BigQuery yang digunakan diberi nama “bie1-kel2”.
+Logical Data Flow
+
 
 # Data Source
 #### [_Denpasar Weather Data on Kaggle_](https://www.kaggle.com/datasets/cornflake15/denpasarbalihistoricalweatherdata?resource=download) ####
