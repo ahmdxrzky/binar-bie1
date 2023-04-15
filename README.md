@@ -11,7 +11,7 @@ Objective of creation of this dashboard is to give end-to-end visualization to M
   Data Source for this project is located on company's data lake. Company utilize **MongoDB**, a NoSQL Database, as Data Lake. It can be accessed in company's server (a Virtual Machine), exposed at port **27017**. There is 3 databases from the data lake that used in this project, which are **db_customers** (contains identity of customers), **db_products** (contains detail of products), and **db_orders** (contains record of orders).
 - Server & Storage
   To make it safer, data source will be copied to data staging. From this data staging, we will do transformation and stored it in Data Warehouse. After that, we will also do further transformation and split data into Data Marts. We will utilize **PostgreSQL**, a RDBMS, as Data Staging, Data Warehouse, and Data Mart. Data Staging and Data Warehouse will be located in a same PostgreSQL database named as **superstore_dwh** (but they will be put on different schema), while Data Mart will be located in separate PostgreSQL database named as **superstore_dmart**. PostgreSQL can be accessed in the same server as MongoDB. Superstore_dwh is exposed at port **5432**, while superstore_dmart is exposed at port **5433**.
-- Logical Data Flow
+- Logical Data Flow <br>
   ![low_level](https://user-images.githubusercontent.com/99194827/232196388-cf54c01e-380c-45c0-922d-526e43fa8935.png)
 ### Attachments and Links
 No attachment or link need to be embedded.
