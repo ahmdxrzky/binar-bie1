@@ -5,14 +5,16 @@ This project is a Business Intelligence Project that creates dashboard to give m
 Objective of creation of this dashboard is to give end-to-end visualization to Marketing and Sales Department upon product sales in all region and also to give monitorization privilege about sales in certain period.
 
 # Technical Design Diagram
-## Components
+![tdd](https://user-images.githubusercontent.com/99194827/232196381-1bae28ba-87c5-42b2-8239-18de215a4fc2.png)
+### Components
 - Connection & Location
-  Data Source for this project is located on 
-  Data Source atau sumber data untuk proyek ini terletak pada Data Lake perusahaan yang berada pada RDBMS SQL Server. Data Lake ini dapat diakses pada server perusahaan dengan IP Address 34.101.194.202 pada port 1433. Ada 3 database dari Data Lake yang digunakan pada proyek ini, yaitu database Customers (berisi identitas customer), Categories (berisi detail produk), dan Orders (berisi riwayat pesanan).
-Server & Storage
-Data Warehouse yang digunakan untuk menyimpan data adalah Google BigQuery yang diakses dengan akun Google perusahaan. Proyek BigQuery yang digunakan diberi nama “bie1-kel2”.
-Logical Data Flow
-
+  Data Source for this project is located on company's data lake. Company utilize **MongoDB**, a NoSQL Database, as Data Lake. It can be accessed in company's server (a Virtual Machine), exposed at port **27017**. There is 3 databases from the data lake that used in this project, which are **db_customers** (contains identity of customers), **db_products** (contains detail of products), and **db_orders** (contains record of orders).
+- Server & Storage
+  To make it safer, data source will be copied to data staging. From this data staging, we will do transformation and stored it in Data Warehouse. After that, we will also do further transformation and split data into Data Marts. We will utilize **PostgreSQL**, a RDBMS, as Data Staging, Data Warehouse, and Data Mart. Data Staging and Data Warehouse will be located in a same PostgreSQL database named as **superstore_dwh** (but they will be put on different schema), while Data Mart will be located in separate PostgreSQL database named as **superstore_dmart**. PostgreSQL can be accessed in the same server as MongoDB. Superstore_dwh is exposed at port **5432**, while superstore_dmart is exposed at port **5433**.
+- Logical Data Flow
+  ![low_level](https://user-images.githubusercontent.com/99194827/232196388-cf54c01e-380c-45c0-922d-526e43fa8935.png)
+### Attachments and Links
+No attachment or link need to be embedded.
 
 # Data Source
 #### [_Denpasar Weather Data on Kaggle_](https://www.kaggle.com/datasets/cornflake15/denpasarbalihistoricalweatherdata?resource=download) ####
