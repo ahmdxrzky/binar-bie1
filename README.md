@@ -5,272 +5,77 @@ This project is a Business Intelligence Project that creates dashboard to give m
 Objective of creation of this dashboard is to give end-to-end visualization to Marketing and Sales Department upon product sales in all region and also to give monitorization privilege about sales in certain period.
 
 # Technical Design Diagram
-![tdd](https://user-images.githubusercontent.com/99194827/232196381-1bae28ba-87c5-42b2-8239-18de215a4fc2.png)
+![tdd](https://user-images.githubusercontent.com/99194827/232273568-569e5e0b-fed9-4bcc-98e8-4e2c56f7e13e.png)
+
 ### Components
-- Connection & Location
-  Data Source for this project is located on company's data lake. Company utilize **MongoDB**, a NoSQL Database, as Data Lake. It can be accessed in company's server (a Virtual Machine), exposed at port **27017**. There is 3 databases from the data lake that used in this project, which are **db_customers** (contains identity of customers), **db_products** (contains detail of products), and **db_orders** (contains record of orders).
-- Server & Storage
-  To make it safer, data source will be copied to data staging. From this data staging, we will do transformation and stored it in Data Warehouse. After that, we will also do further transformation and split data into Data Marts. We will utilize **PostgreSQL**, a RDBMS, as Data Staging, Data Warehouse, and Data Mart. Data Staging and Data Warehouse will be located in a same PostgreSQL database named as **superstore_dwh** (but they will be put on different schema), while Data Mart will be located in separate PostgreSQL database named as **superstore_dmart**. PostgreSQL can be accessed in the same server as MongoDB. Superstore_dwh is exposed at port **5432**, while superstore_dmart is exposed at port **5433**.
-- Logical Data Flow <br>
-  ![low_level](https://user-images.githubusercontent.com/99194827/232196388-cf54c01e-380c-45c0-922d-526e43fa8935.png)
+#### Connection & Location
+Data Source for this project is located on company's data lake. Company utilize **MongoDB**, a NoSQL Database, as Data Lake. It can be accessed in company's server (a Virtual Machine), exposed at port **27017**. There is 3 databases from the data lake that used in this project, which are **db_customers** (contains identity of customers), **db_products** (contains detail of products), and **db_orders** (contains record of orders).
+#### Server & Storage
+To maintain data quality, data source will be copied to data staging. From this data staging, we will do transformation and stored it in Data Warehouse. After that, we will also do further transformation and split data into Data Marts. We will utilize **PostgreSQL**, a Relational Database Management System (RDBMS), as Data Staging, Data Warehouse, and Data Mart. Data Staging and Data Warehouse will be located in a same PostgreSQL database named as **superstore_dwh** (but they will be put on different schema), while Data Mart will be located in separate PostgreSQL database named as **superstore_dmart**. PostgreSQL can be accessed in the same server as MongoDB. Superstore_dwh is exposed at port **5432**, while superstore_dmart is exposed at port **5433**.
+#### Logical Data Flow <br>
+![low_level](https://user-images.githubusercontent.com/99194827/232196388-cf54c01e-380c-45c0-922d-526e43fa8935.png)
+
 ### Attachments and Links
 No attachment or link need to be embedded.
 
-# Data Source
-#### [_Denpasar Weather Data on Kaggle_](https://www.kaggle.com/datasets/cornflake15/denpasarbalihistoricalweatherdata?resource=download) ####
-Disclaimer: Actually, dataset above only provides weather data of Denpasar City from 1990 to 2020 (even the data for 2020 is not complete to December). In order to make this data engineering project (which batch processes the data) look real and simulate the actual workflow of data engineering, I _manipulate_ the dataset by _adding_ 4 years to the actual date data and _dividing_ it per year and month, so the data for 2023 are available and can be used to simulate batch processing per month. I put this splitted data [here](https://github.com/ahmdxrzky/de-zoomcamp-2023/tree/main/final_project/assets/dataset).
+# Technical Specification
+### Application Server
+Server used in this project is utilized Virtual Machine instance provided by Google Compute Engine, with specifications as follow:
+- Image of OS: Debian GNU/Linux 11
+- Machine Type: E2
+- Memory: 4GB
+- CPU: 2 Core
+- Disk: 10 GB
+- Software: MongoDB and PostgreSQL
 
-# Project Framework
-![assets drawio](https://user-images.githubusercontent.com/99194827/229009417-e04e2add-29fa-45e3-aa8f-cf094ca23df9.png)
-1. Pipeline for processing dataset and extracting it from source to a data lake.
-2. Pipeline for batch moving the data from the data lake to a data warehouse.
-3. Transform the data in the data warehouse.
-4. Create a dashboard to see pattern of weather by year.
+### Database and Server Request
+Data from database used as data source for this project. Grant access as viewer to Business Intelligence Engineers is enough to fulfill _principle of least privilege_.
 
-# Tools
-### Cloud
-- **Google Compute Engine (GCE)**. A GCE virtual machine used to develop and run this project along with Google Cloud Storage (GCS) and Google BigQuery (GBQ).
-- **Terraform**. Infrastructure as Code (IaC) tool to create a GCS Bucket and GBQ Dataset in a code execution only.
-- **Docker** and **Docker Hub**. Tool for containerizing environment of this data pipeline project.
-### Data Ingestion
-- **Prefect**. Workflow Orchestration tool to orchestrarize data pipeline.
-- **Google Cloud Storage (GCS)**. GCS as Data Lake.
-### Data Warehouse
-- **Google BigQuery (GBQ)**. GBQ as Data Warehouse. Table being partitioned by datetime.
-### Data Transformations
-- **data build tools (dbt)**. Tool for transforming data in data warehouse.
-### Dashboard
-- **Google Looker Studio**. Tool for visualizing data in two tiles (for this project).
+### Data Pipeline
+#### Tools
+Data Transformation in this project done with Pentaho Data Integration software. We can define all pipeline from extract data from data lake until load data to data marts in a single execution. First, we need to define connection with MongoDB and PostgreSQL. Then, we create step for each process. Last, we schedule a job to run this transformation pipeline every certain time.
 
-# Steps to Reproduce this Project
-### Create Service Account
-- Access **Google Cloud Console** [here](https://console.cloud.google.com/getting-started). Login with your google account. Then, move to **Service Accounts** tab. (You have to select a cloud project or create one if you didn't have any)
-  ![Cloud Console](https://user-images.githubusercontent.com/99194827/228078545-add2b3b8-202d-4ffd-989f-0122b5969980.png)
-- Click **Create Service Account**.
-  ![Screenshot 2023-03-28 051305](https://user-images.githubusercontent.com/99194827/228079307-30829881-8e52-44d0-8aed-39f20d25f849.png)
-- Fill in name and description (ID is auto-generate based on name) for service account, then click **Create and Continue**.
-  ![Screenshot 2023-03-28 051359](https://user-images.githubusercontent.com/99194827/228079334-9bd09e3c-ab51-400a-ace9-cbeffbfc1592.png)
-- Grant all access needed by this service account to the project. Since this project will work around Cloud Storage and BigQuery, so I grant these roles for this service account. Then, click **Continue**. Then, click **Done** on bottom of the page.
-  ![Screenshot 2023-03-28 051754](https://user-images.githubusercontent.com/99194827/228079475-2a304a14-01ae-4646-ab5f-b710d20203a9.png)
-- Click three dots on row of the newly built Service Account and click **Manage keys**.
-  ![Screenshot 2023-03-28 052039](https://user-images.githubusercontent.com/99194827/228079986-950b8695-1e61-4fd0-8d1e-20476df5b441.png)
-- Drop **Add key** down, then click **Create new key**.
-  ![Screenshot 2023-03-28 052151](https://user-images.githubusercontent.com/99194827/228080151-dd07124c-5182-46d1-9d7e-2d4ddc656426.png)
-- Choose **JSON** option, then click **Create**. A keyfile in json format will be downloaded automatically.
-  ![Screenshot 2023-03-28 052232](https://user-images.githubusercontent.com/99194827/228080289-f73e2675-3bf9-44f3-b6a1-dd6a812852cf.png)
+#### Diagram
+![image](https://user-images.githubusercontent.com/99194827/232277932-0e84eab2-e904-45b5-a0bc-3186612f8bb5.png)
 
-### Create a Virtual Machine Instance on Google Compute Engine
-- Still in Google Cloud Console, move to **VM Instances** tab.
-  ![Screenshot 2023-03-28 052449](https://user-images.githubusercontent.com/99194827/228080597-900e3bb8-96b9-4e12-b1b4-f81a03683aa3.png)
-- Click **Create Instance**.
-  ![Screenshot 2023-03-28 052531](https://user-images.githubusercontent.com/99194827/228080697-2cf00073-8e38-48c3-a1ff-012784f3a330.png)
-- Fill in name, region, and zone.
-  ![Screenshot 2023-03-28 052637](https://user-images.githubusercontent.com/99194827/228080851-981302b9-4a28-49fe-8839-6d1463c60b37.png)
-- Scroll down. In Firewall part, allow **HTTP** and **HTTPS** traffic.
-  ![Screenshot 2023-03-28 052723](https://user-images.githubusercontent.com/99194827/228081008-64cd7a46-d291-4eb5-839e-11c373d19493.png)
-- Scroll down again and drop **Advanced options** down. Drop **Networking** down, fill in network tags and enable **IP forwarding**. Then, click **Create** on bottom of the page.
-  ![Screenshot 2023-03-28 052913](https://user-images.githubusercontent.com/99194827/228081268-5154c229-14d0-47e1-bf8c-826f2aaba207.png)
-- Remember value from **External IP** column. It will be used for accessing this VM from local machine.
-  ![Screenshot 2023-04-01 111110](https://user-images.githubusercontent.com/99194827/229265118-0e0230eb-e869-45d4-bbb5-01fa66e277a5.png)
-- Move to **Firewall** tab. Then, click **Create Firewall Rule**.
-  ![Screenshot 2023-03-28 053143](https://user-images.githubusercontent.com/99194827/228081668-97d46b2e-6e3c-43a7-8aa3-ff07643cf54a.png)
-  ![Screenshot 2023-03-28 053232](https://user-images.githubusercontent.com/99194827/228085307-0d8c1bac-d9fa-4545-8509-824f9957472e.png)
-- Fill in name and description of firewall rule.
-  ![Screenshot 2023-03-28 053336](https://user-images.githubusercontent.com/99194827/228081917-55e32bf8-7662-4a80-9360-236cf464dcb9.png)
-- Fill in **target tags** with **network tags** defined previously ("project" for my case), "0.0.0.0/0" on **Source IPv4 ranges** (so all external machine can access this VM), and 4200 on TCP **ports** (port for Prefect UI). Then, click **Create** on bottom of the page.
-  ![Screenshot 2023-03-28 053556](https://user-images.githubusercontent.com/99194827/228082396-ce6819db-415a-42bb-bc11-6997f2ca55e8.png)
-- Move to local terminal (I use wsl terminal on Visual Studio Code. This also can be done with command prompt for windows). Check have you generate a SSH key or not by executing this command.
-  ```bash
-  cat ~/.ssh/id_rsa.pub
-  ```
-  If there is no `id_rsa.pub` file on your machine, it means you haven't generate any SSH key. If there is output from the command above, you can skip this very next step.
-- Generate SSH key by executing this command.
-  ```bash
-  ssh-keygen
-  ```
-- Read content of `id_rsa.pub` file and copy it.
-- Back to **Google Cloud Console**. Go to **VM Instances** tab and click previously built VM instance.
-  ![Screenshot 2023-03-28 054131](https://user-images.githubusercontent.com/99194827/228083451-edcf0d0f-57e4-4821-9252-c469a4266e49.png)
-- Click **Edit**.
-  ![Screenshot 2023-03-28 054144](https://user-images.githubusercontent.com/99194827/228083508-78e27ad8-fe32-4a97-9a21-f43123c13447.png)
-- On **SSH Keys** part, click **+ Add item** and paste RSA key from local terminal copied on step 11. Then, click **Save** on bottom of the page. <br>
-  Before: <br>
-  ![Screenshot 2023-03-28 054214](https://user-images.githubusercontent.com/99194827/228083563-630142b0-6277-47fd-83d7-084ac24d699e.png) <br>
-  After: <br>
-  ![Screenshot 2023-03-28 054235](https://user-images.githubusercontent.com/99194827/228083588-598ead42-e167-4309-a80c-981893591987.png)
-- VM can be accessed through local terminal-cli now.
-  ```bash
-  ssh <username>@<external-ip>
-  ```
-  Replace `<username>` with username of machine and `<external-ip>` with value of external IP address of VM instance.
-  ![Screenshot 2023-04-01 105951](https://user-images.githubusercontent.com/99194827/229264688-5f51e356-03ce-44fa-b886-ea4ad4598896.png)
-
-### Setup Environment with Docker
-- Install docker on virtual machine.
-  ```bash
-  sudo apt-get install docker.io -y
-  sudo chmod 666 /var/run/docker.sock
-  ```
-- Check project id. <br>
-  Personal project id can be seen in google cloud console.
-  ![Screenshot 2023-03-29 093459](https://user-images.githubusercontent.com/99194827/228412084-a15023e3-2fe5-4823-ab0a-614b3a7caf3d.png)
-- Environment for this data engineering pipeline has been created and pushed to Image Registry of Docker which is Docker Hub. I've set it publicly accessible, so everyone can create a container based on this Docker Image.
-  ![image](https://user-images.githubusercontent.com/99194827/229265278-54a15a85-94aa-49f6-8c95-0abe645d316a.png) <br>
-  Execute this command below to run docker container based on docker images above.
-  ```bash
-  docker run -p 4200:4200 -e EXTERNAL_IP=<external-ip> -e PROJECT_ID=<project-id> -it ahmdxrzky/dezoomcamp_final_project:0.0.3
-  ```
-  Change `<external-ip>` with external IP address of VM instance and `<project-id>` with personal project ID that can be seen in cloud console in the previous step. <br>
-    ![Screenshot 2023-04-01 110443](https://user-images.githubusercontent.com/99194827/229264813-07a4ca3c-ddf7-402e-8c03-843dcdbc7207.png)
-
-  _LOGICAL FRAMEWORK_ <br>
-  _I build this docker image based on this [Dockerfile](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/Dockerfile) which use **Python:3.8** as base image. This image containerize:_
-  1. _**Install** sudo and nano_
-  2. _**Install Terraform**_
-  3. _**Copy** [requirements.txt](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/requirements.txt), [data_pipeline.py](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/src/data_pipeline.py), [manipulation_project_id.py](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/src/manipulation_project_id.py), [main.tf](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/terraform/main.tf), and [variables.tf](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/terraform/variables.tf)_
-  4. _**Create** config folder_
-  5. _**Use** /app folder as working directory_
-  6. _**Install** dependency libraries for Python from requirements.txt_
-  7. _**Use** bash as entrypoint._
-
-- In container bash terminal, change value of a variable to terraform/variables.tf file by executing command below.
-  ```bash
-  python3 /app/src/manipulation_project_id.py $PROJECT_ID
-  ```
-  
-  _LOGICAL FRAMEWORK_ <br>
-  _Because project id is different for each account, I create [manipulation_project_id.py](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/src/manipulation_project_id.py) that open terraform/variables.tf file and ingest project id of the user as default value of **project** variable. Through this, we can simplify process of open file, replace value, and save file only in a single command execution._
-  
-- Then, copy contents of keyfile previously downloaded in local machine to config/keyfile.json file in docker container. <br>
-  ```bash
-  nano /app/config/keyfile.json
-  ```
-  ![Screenshot 2023-03-28 060521](https://user-images.githubusercontent.com/99194827/228086639-eb88867c-22cb-4afa-8cd2-336c0d6ec04d.png)
-- Run terraform to create GCS Bucket and GBQ Dataset with single execution.
-  ```bash
-  cd /app/terraform \
-    && terraform init \
-    && terraform plan \
-    && terraform apply -auto-approve
-  ```
-  
-  _LOGICAL FRAMEWORK_ <br>
-  1. _**Terraform**, as Iac Tool, creates infrastructures by read these two files, [main.tf](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/terraform/main.tf) and [variables.tf](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/terraform/variables.tf)_
-  2. _**variables.tf** file contains definition (name, description, default value, and data type) of variables that will be used in main.tf file. In this project, I created **data_lake_bucket**, **project**, **region**, **credentials**, **storage_class**, and **BQ_DATASET** variables which contain value of name for GCS Bucket, personal project id, region for resource, path to service account keyfile, storage class, and name for GBQ Dataset, respectively._
-  3. _**main.tf** file contains codes to build GCS Bucket and GBQ Dataset based on variables on variables.tf file._
-
-### Activate and Configurate Prefect
-- Activate and Access Prefect UI.
-  ```bash
-  prefect config set PREFECT_API_URL=http://$EXTERNAL_IP:4200/api
-  prefect server start --host 0.0.0.0
-  ```
-  Now, Prefect UI can be accessed from web browser with URL `<external-ip>:4200`.
-  ![Screenshot 2023-04-01 105736](https://user-images.githubusercontent.com/99194827/229264603-4dd9bd7d-c097-4e31-9213-ca047d622a25.png)
-- Create Prefect Block for GCP Credentials. <br>
-  From Prefect UI, move to **Blocks** tab.
-  ![Screenshot 2023-03-28 062930](https://user-images.githubusercontent.com/99194827/228089527-687c69f4-3ba6-42f1-94c1-b5ad9d115cc3.png) <br>
-  Click **+** button, search **GCP Credentials**, then click **+ Add**. <br>
-  ![Screenshot 2023-03-28 063111](https://user-images.githubusercontent.com/99194827/228089771-b5d2a243-7ecc-4f8a-b032-7a01bd335d23.png) <br>
-  Fill `gcp-credentials-final-project` for the block on **Block Name** and `/app/config/keyfile.json` on **Service Account File**. Then, click **Create**.
-  ![image](https://user-images.githubusercontent.com/99194827/228089865-a8b74240-f14b-4504-92c9-69938e2f6d2c.png)
-- Create Prefect Block for GCS Bucket. <br>
-  Move again to **Blocks** tab. Click **+** button, search **GCS Bucket**, then click **+ Add**. <br>
-  ![image](https://user-images.githubusercontent.com/99194827/228090032-a5a7d758-543b-4296-9404-411202c0398c.png) <br>
-  Fill `gcs-bucket-final-project` for the block on **Block Name**, `dezoomcamp_final_project` on **Bucket**, and choose which GCP Credentials embedded with the bucket on **Gcp Credentials**. Then, click **Create**. <br>
-  ![image](https://user-images.githubusercontent.com/99194827/228090227-34a9c702-6468-4979-871d-12bea89a86f8.png)
-- Open new terminal and access vm in the new terminal using ssh (same as before). Access same container by checking its id and run with exec command.
-  ```bash
-  docker ps -a
-  ```
-  Remember CONTAINER ID of the container. This id will be used to access its bash terminal.
-  ```bash
-  docker exec -it <container-id> bash
-  ```
-  Replace `<container-id>` with CONTAINER ID above.
-  ![image](https://user-images.githubusercontent.com/99194827/229264890-4972df8c-5e71-466d-91ba-0caa46acae3d.png)
-
-## Create, Apply, and Run Prefect Deployment
-- To create and apply Prefect Deployment and set the cron to run monthly, execute this command.
-  ```bash
-  prefect deployment build /app/src/data_pipeline.py:etl_main_function -n "ETL_GCS_to_BGQ_Monthly" --cron "0 0 1 * *" -a
-  ```
-  A Deployment (as same as job being scheduled) has been built and will be run monthly at 1st day of the month.
-  ![image](https://user-images.githubusercontent.com/99194827/228199147-79b85c4e-5b77-4b7e-89fe-0a1e0889d3e0.png) <br>
-  
-  _LOGICAL FRAMEWORK_ <br>
-  _I've created [data_pipeline.py](https://github.com/ahmdxrzky/de-zoomcamp-2023/blob/main/final_project/src/data_pipeline.py) that contains data pipeline consists of: A flow, a subflow, two subsubflows with 3 tasks in each subsubflow._
-  1. _A flow called **etl_main_function** that accepts 3 params, which means this flow is parameterized. It will ingest initial dataset or ingest previous month data depends on value of **initial** param._
-  2. _A sub flow called **etl_for_a_month** that accepts 2 param (year and month) and handles ingest process of a file of data per month._
-  3. _Two subsubflows called **etl_ingest_to_data_lake** and **etl_ingest_to_data_warehouse**. **etl_ingest_to_data_lake** subsubflow consists of 3 tasks, which are **extract_from_source** (Read csv file as dataframe), **write_parquet_to_local** (Transform dataframe to parquet file), and **write_parquet_to_gcs** (Upload parquet file to Data Lake). **etl_ingest_to_data_warehouse** subsubflow consists of 3 tasks too, which are **extract_from_gcs** (Download parquet files from Data Lake), **read_parquet_as_dataframe** (Read parquet file as dataframe), and **write_dataframe_to_gbq** (Ingest dataframe to Data Warehouse)._
-  
-- Do quick run to ingest initial dataset (Jan 2015 to Feb 2023), since March 1st, 2023 has already passed.
-  ```bash
-  prefect deployment run etl-main-function/ETL_GCS_to_BGQ_Monthly --param initial=True
-  ```
-- Don't forget to start a Prefect Agent for the deployment by executing command below:
-  ```bash
-  prefect agent start -q 'default'
-  ```
-  By executing command above, quick run to ingest initial dataset will run. BigQuery will start to store dataset from Jan 2015 to Feb 2023.
-  ![image](https://user-images.githubusercontent.com/99194827/228421509-62e3fe15-5181-46a9-8b39-e18d3a25455b.png) <br>
-  It is also schedule batch processing data of Mar 2023 at Apr 1st, Apr 2023 at May 1st, May 2023 at June 1st, etc <br>
-  ![image](https://user-images.githubusercontent.com/99194827/228478394-b8cc0348-d252-4e1f-b9ed-e407c40532f9.png)
-
-### Data Transformation on Data Warehouse with dbt Cloud
-- Access dbt cloud [here](https://cloud.getdbt.com/login). Register as usual if you have never create one. Click gear icon on top right side. Then, click **Account Settings**.
-  ![image](https://user-images.githubusercontent.com/99194827/228206587-74e90eb9-ea0a-437b-bc2a-eb629d9dbdef.png)
-- Click **+ New Project**. Fill name for this project. Then, click **Continue**.
-  ![image](https://user-images.githubusercontent.com/99194827/228201875-81b7d241-3e6f-486b-8293-1e11f7a0c11f.png)
-- Choose a connection. For this project, choose **BigQuery**. Upload service account keyfile that has been downloaded before.
-  ![image](https://user-images.githubusercontent.com/99194827/228202847-e169514d-22bc-4367-842c-cebf5434b988.png)
-- In **Development Credentials** part, fill "final_project" in Dataset as we define this dataset with Terraform before. Then, click **Test Connection**. This final_project dataset used as Data Source and Testing Environment before applying Data Modelling schema, since we ingest data from GCS to this GBQ dataset.
-  ![image](https://user-images.githubusercontent.com/99194827/228203128-88b8de68-83e9-4489-93f6-93783ea225b9.png)
-- In **Setup a Repository** part, click **Github** to choose a repository for dbt versioning.
-  You can fork [this repository](https://github.com/ahmdxrzky/dbt-cloud-data-transformation) and choose this repository in **Setup a Repository** part. <br>
-- Go to **Develop** tab. Execute this command on dbt terminal.
-  ```bash
-  dbt seed
-  dbt run
-  ```
-  ![image](https://user-images.githubusercontent.com/99194827/228480443-2c7144ca-ea66-4019-9c5f-69b07fd22ce9.png)
-  If it run well, then we can proceed to Deployment.
-- Drop down **Deploy** and click **Environments**.
-  ![image](https://user-images.githubusercontent.com/99194827/228686465-38acffd4-5d10-488b-8fa0-54548dbdd1b8.png)
-- Click **Create Environment**. Because development environment has been already built, we can only create deployment environment. Fill in **Name** as name for this deployment environment and **Dataset** as name of dataset that will be used as final data warehouse after data transformation and used for visualization.
-  ![image](https://user-images.githubusercontent.com/99194827/228686925-c3a376cd-15f1-4835-b667-6161a6631c80.png)
-- It is automatically redirecting us to the environment dashboard menu. Click **+ Create One**. Fill in **Job Name** and **Target Name**. Don't forget to make this target name here differs with target name on Dev Environment.
-  ![image](https://user-images.githubusercontent.com/99194827/228687956-b1f7f706-2a47-428b-ab64-bae4313d215e.png)
-- Add commands that want to be run within the model. Since we only need two chunks of code in development to create everything, then we only need to write down these two commands.
-  ![image](https://user-images.githubusercontent.com/99194827/228688156-7631c9de-1007-4ae0-8a26-1d2e5a436a77.png)
-- Click the job that has been built just now and click **Run Now** to see if deployment process can be run or not.
-  ![image](https://user-images.githubusercontent.com/99194827/228703172-ebd7c212-9868-449d-9497-11b0a73dc194.png)
-- As a result, source and staging table are in different datasets.
-  ![image](https://user-images.githubusercontent.com/99194827/228703208-3c63d718-8570-4e0a-b1d6-b7cffe8de5db.png)
-  
-  _LOGICAL FRAMEWORK_ <br>
-  1. _**dbt** initiates a folder as data modelling schema by creating folders. It uses external file as data source for table if the file is being put in **seeds** folder. It also creates models if the models' schema are defined in **models** folder._
-  2. _I use [weather_lookup.csv](https://github.com/ahmdxrzky/dbt-cloud-data-transformation/blob/main/seeds/weather_lookup.csv) as seed file. It contains weather id used in weather data that corresponds with its weather name and description._
-  3. _I define two kinds of model schema, which are **staging** and **facts**._
-  4. _I define a [staging model](https://github.com/ahmdxrzky/dbt-cloud-data-transformation/blob/main/models/staging/stg_weather_data.sql) as **view** in GBQ. It takes several columns from partitioned **all_weather_data** table and converts their data types._
-  5. _I define a [**dimensional table**](https://github.com/ahmdxrzky/dbt-cloud-data-transformation/blob/main/models/facts/dim_weather.sql) from seed file._
-  6. _I define a [**fact table**](https://github.com/ahmdxrzky/dbt-cloud-data-transformation/blob/main/models/facts/fact_weather.sql) which join weather data with dimensional table based on weather_id._
-
-### Data Visualization with Looker Data Studio
-- Access Looker Data Studio [here](https://lookerstudio.google.com) and login with google account. Then, click **Create** then **Data source**.
-  ![image](https://user-images.githubusercontent.com/99194827/228208676-08ab15b4-294c-4ff1-b3f2-7884c1ed25ff.png)
-- Choose **BigQuery**.
-  ![image](https://user-images.githubusercontent.com/99194827/228208786-4607c008-5772-420e-bee4-baccffe30b0b.png)
-- Choose project, dataset, and table on BigQuery that will be used as data source. Then, click **Connect**. For this project, I used fact table defined from Data Transformation with dbt.
-  ![image](https://user-images.githubusercontent.com/99194827/229086381-9b4d8875-bd36-419d-920f-4f90bf6f78c1.png)
-- Click **Create** then **Report**.
-  ![image](https://user-images.githubusercontent.com/99194827/228209589-574d4bad-15ab-48c5-b969-5697bed9ab46.png)
-- Define dashboard as your wish. My dashboard project can be accessed [here](https://lookerstudio.google.com/reporting/ece80e5f-5838-47eb-ba58-b64ff5576b1c)
-  ![Screenshot 2023-04-01 112809](https://user-images.githubusercontent.com/99194827/229265595-575a93d4-6895-43d5-bb04-170960a4ee34.png)
-  
-  _LOGICAL FRAMEWORK_ <br>
-  1. _The first visualization is created using three columns. I use **record_datetime** as filter, **record_month** as x-axis, and count of **weather_category** per month as y-axis. I also use **weather_category** itself as detail dimension._
-  2. _The second visualization is created using two columns. I use **record_datetime** as filter and x-axis also average of **temperature** on a day as y-axis._
-
-# Insights and Goals Fulfilling
-A data pipeline of Denpasar Weather Data from data source to dashboard has been **created**. From visualization of data, it can be clearly seen that month with highest total of rainy day is **January** and the lowest is **October**, where October is assumed as **rainy** season. Therefore, I strongly believe that there is a **shift** in weather patternal in Denpasar.
+#### Steps
+| Name | Detail | Notes |
+|------|--------|-------|
+| Extract_Orders | Extract orders data from MongoDB | Connect to db_orders in superstore_db |
+| Staging_Orders | Load orders data to PostgreSQL | Connect to staging.orders in superstore_dwh |
+| Sort_cust_id_from_orders | Sort orders table based on customer_id | Preparation to join with customers table |
+| Extract_Customers | Extract customers data from MongoDB | Connect to db_customers in superstore_db |
+| Staging_Customers | Load orders data to PostgreSQL | Connect to staging.customers in superstore_dwh |
+| Sort_cust_id_from_customers | Sort customers table based on customer_id | Preparation to join with orders table |
+| First_Join | Inner join orders table with customers table based on customer_id | Redundant columns deleted |
+| Sort_prod_id_from_first_join | Sort table from join process based on product_id | Preparation to join with products table |
+| Extract_Products | Extract products data from MongoDB | Connect to db_products in superstore_db |
+| Staging_Products | Load products data to PostgreSQL | Connect to staging.products in superstore_dwh
+| Sort_prod_id_from_products | Sort products table based on product_id | Preparation to join with table from previous join process |
+| Last_Join | Inner join the table from previous join process with products table | Redundant columns deleted |
+| Sort_Rows | Sort result table based on order_date, row_id, order_id, customer_id, and product_id | So fact table looks good visually |
+| Load_Fact | Load fact table to PostgreSQL | Connect to production.fact_table in superstore_dwh |
+| Extract_for_daily_report | Extract data for daily report from fact_table with SQL query | SELECT <br>&emsp; order_date AS record_date, <br>&emsp; COUNT(sales) AS total_sales, <br>&emsp; SUM(sales - discount * sales) AS net_sales <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_date <br> ORDER BY record_date; |
+| Load_daily_report | Load daily report data to PostgreSQL | Connect to mart.daily_report in superstore_dmart |
+| Extract_for_monthly_report | Extract data for monthly report from fact_table with SQL query | SELECT <br>&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp; CAST(EXTRACT(MONTH FROM order_date) AS integer) AS record_month, <br>&emsp; COUNT(sales) AS total_sales, <br>&emsp; SUM(sales - discount * sales) AS net_sales <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_year, record_month <br> ORDER BY record_year, record_month; |
+| Load_monthly_report | Load montly report data to PostgreSQL | Connect to mart.monthly_report in superstore_dmart |
+| Extract_for_quarterly_report | Extract data for quarterly report from fact_table with SQL query | SELECT <br>&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp; CAST(EXTRACT(QUARTER FROM order_date) AS integer) AS record_quarter, <br>&emsp; COUNT(sales) AS total_sales, <br>&emsp; SUM(sales - discount * sales) AS net_sales <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_year, record_quarter <br> ORDER BY record_year, record_quarter; |
+| Load_quarterly_report | Load quarterly report data to PostgreSQL | Connect to mart.quarterly_report in superstore_dmart |
+| Extract_for_yearly_report | Extract data for yearly report from fact_table with SQL query | SELECT <br>&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp; COUNT(sales) AS total_sales, <br>&emsp; SUM(sales - discount * sales) AS net_sales <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_year <br> ORDER BY record_year; |
+| Load_yearly_report | Load yearly report data to PostgreSQL | Connect to mart.yearly_report in superstore_dmart |
+| Extract_for_actual_vs_budget | Extract data for actual and budget comparison | SELECT <br>&emsp; SUM(actual_value) AS total_actual_value, <br>&emsp; SUM(budget_value) AS total_budget_value, <br>&emsp; ((SUM(actual_value)/SUM(budget_value)) * 100) AS percentage <br> FROM (<br>&emsp; SELECT <br>&emsp;&emsp; record_year, <br>&emsp;&emsp; net_sales AS actual_value, <br>&emsp;&emsp; (LAG(net_sales) OVER (ORDER BY record_year) * 1.1) AS budget_value <br>&emsp; FROM (<br>&emsp;&emsp; SELECT <br>&emsp;&emsp;&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp;&emsp;&emsp; COUNT(sales) AS total_sales, <br>&emsp;&emsp;&emsp; SUM(sales - discount * sales) AS net_sales <br>&emsp;&emsp; FROM superstore_dwh.production.fact_table <br>&emsp;&emsp; GROUP BY record_year <br>&emsp;&emsp; ORDER BY record_year <br>&emsp; ) AS subsubquery <br> ) AS subquery;
+| Load_actual_vs_budget | Load actual and budget comparison report to PostgreSQL | Connect to mart.actual_vs_budget in superstore_dmart |
+| Extract_for_monthly_growth | Extract data for monthly growth from fact_table with SQL query | SELECT <br>&emsp; record_year, <br>&emsp; record_month, <br>&emsp; gross_sales, <br>&emsp; ((gross_sales - LAG(gross_sales) OVER (ORDER BY record_year, record_month))/LAG(gross_sales) OVER (ORDER BY record_year, record_month)) * 100 AS growth_percentage <br> FROM ( <br>&emsp; SELECT <br>&emsp;&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp;&emsp; CAST(EXTRACT(MONTH FROM order_date) AS integer) AS record_month, <br>&emsp;&emsp; SUM(sales) AS gross_sales <br>&emsp; FROM superstore_dwh.production.fact_table <br>&emsp; GROUP BY record_year, record_month <br> ) AS subquery <br> ORDER BY record_year, record_month; |
+| Load_monthly_growth | Load monthly growth data to PostgreSQL | Connect to mart.monthly_growth in superstore_dmart |
+| Extract_for_quarterly_growth | Extract data for quarterly growth from fact_table with SQL query | SELECT <br>&emsp; record_year, <br>&emsp; record_quarter, <br>&emsp; gross_sales, <br>&emsp; ((gross_sales - LAG(gross_sales) OVER (ORDER BY record_year, record_quarter))/LAG(gross_sales) OVER (ORDER BY record_year, record_quarter)) * 100 AS growth_percentage <br> FROM ( <br>&emsp; SELECT <br>&emsp;&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp;&emsp; CAST(EXTRACT(QUARTER FROM order_date) AS integer) AS record_quarter, <br>&emsp;&emsp; SUM(sales) AS gross_sales <br>&emsp; FROM superstore_dwh.production.fact_table <br>&emsp; GROUP BY record_year, record_quarter <br> ) AS subquery <br> ORDER BY record_year, record_quarter; |
+| Load_quarterly_growth | Load quarterly growth data to PostgreSQL | Connect to mart.quarterly_growth in superstore_dmart |
+| Extract_for_yearly_growth | Extract data for yearly growth from fact_table with SQL query | SELECT <br>&emsp; record_year, <br>&emsp; gross_sales, <br>&emsp; ((gross_sales - LAG(gross_sales) OVER (ORDER BY record_year))/LAG(gross_sales) OVER (ORDER BY record_year)) * 100 AS growth_percentage <br> FROM ( <br>&emsp; SELECT <br>&emsp;&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp;&emsp; SUM(sales) AS gross_sales <br>&emsp; FROM superstore_dwh.production.fact_table <br>&emsp; GROUP BY record_year <br> ) AS subquery <br> ORDER BY record_year; |
+| Load_yearly_growth | Load yearly growth data to PostgreSQL | Connect to mart.yearly_growth in superstore_dmart |
+| Extract_for_loss_report | Extract data for loss report from fact_table with SQL query | SELECT <br>&emsp; order_date AS record_date, <br>&emsp; city, <br>&emsp; region, <br>&emsp; product_id, <br>&emsp; product_category, <br>&emsp; product_subcategory, <br>&emsp; product_name, <br>&emsp; SUM(profit) AS loss <br> FROM superstore_dwh.production.fact_table <br> WHERE profit < 0 <br> GROUP BY record_date, city, region, product_id, product_category, product_subcategory, product_name <br> ORDER BY record_date; |
+| Load_loss_report | Load loss report data to PostgreSQL | Connect to mart.loss_report in superstore_dmart |
+| Extract_for_cust_segmentation | Extract data for customer segmentation from fact_table with SQL query | SELECT <br>&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp; CAST(EXTRACT(QUARTER FROM order_date) AS integer) AS record_quarter, <br>&emsp; customer_id, <br>&emsp; customer_name, <br>&emsp; customer_segment,  <br>&emsp; (CASE  <br>&emsp;&emsp; WHEN SUM(sales) < 200 THEN 'Bronze' <br>&emsp;&emsp; WHEN (SUM(sales) > 200) AND (SUM(sales) < 500) THEN 'Silver' <br>&emsp;&emsp; ELSE 'Gold' <br>&emsp; END) AS shopping_segment <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_year, record_quarter, customer_id, customer_name, customer_segment <br> ORDER BY record_year, record_quarter; |
+| Load_cust_segmentation | Load customer segmentation data to PostgreSQL | Connect to mart.customer_segmentation in superstore_dmart |
+| Extract_for_prod_segmentation | Extract data for product segmentation from fact_table with SQL query | SELECT <br>&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp; CAST(EXTRACT(MONTH FROM order_date) AS integer) AS record_month, <br>&emsp; city, <br>&emsp; region, <br>&emsp; product_id, <br>&emsp; product_category, <br>&emsp; product_subcategory, <br>&emsp; product_name, <br>&emsp; (CASE <br>&emsp;&emsp; WHEN SUM(quantity) < 5 THEN '3rd Product' <br>&emsp;&emsp; WHEN (SUM(quantity) > 5) AND (SUM(quantity) < 10) THEN '2nd Product' <br>&emsp;&emsp; ELSE '1st Product' <br>&emsp; END) AS product_segment <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_year, record_month, city, region, product_id, product_category, product_subcategory, product_name <br> ORDER BY record_year, record_month; |
+| Load_prod_segmentation | Load product segmentation data to PostgreSQL | Connect to mart.product_segmentation in superstore_dmart |
+| Extract_for_reg_segmentation | Extract data for region segmentation from fact_table with SQL query | SELECT <br>&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp; CAST(EXTRACT(MONTH FROM order_date) AS integer) AS record_month, <br>&emsp; city, <br>&emsp; region, <br>&emsp; (CASE <br>&emsp;&emsp; WHEN SUM(sales) < 1000 THEN 'Kategori I' <br>&emsp;&emsp; WHEN (SUM(sales) > 1000) AND (SUM(sales) < 2000) THEN 'Kategori II' <br>&emsp;&emsp; ELSE 'Kategori III' <br>&emsp; END) AS region_segment <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_year, record_month, city, region <br> ORDER BY record_year, record_month; |
+| Load_reg_segmentation | Load region segmentation data to PostgreSQL | Connect to mart.region_segmentation in superstore_dmart |
