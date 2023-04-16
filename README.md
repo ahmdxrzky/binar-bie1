@@ -79,3 +79,12 @@ Data Transformation in this project done with Pentaho Data Integration software.
 | Load_prod_segmentation | Load product segmentation data to PostgreSQL | Connect to mart.product_segmentation in superstore_dmart |
 | Extract_for_reg_segmentation | Extract data for region segmentation from fact_table with SQL query | SELECT <br>&emsp; CAST(EXTRACT(YEAR FROM order_date) AS integer) AS record_year, <br>&emsp; CAST(EXTRACT(MONTH FROM order_date) AS integer) AS record_month, <br>&emsp; city, <br>&emsp; region, <br>&emsp; (CASE <br>&emsp;&emsp; WHEN SUM(sales) < 1000 THEN 'Kategori I' <br>&emsp;&emsp; WHEN (SUM(sales) > 1000) AND (SUM(sales) < 2000) THEN 'Kategori II' <br>&emsp;&emsp; ELSE 'Kategori III' <br>&emsp; END) AS region_segment <br> FROM superstore_dwh.production.fact_table <br> GROUP BY record_year, record_month, city, region <br> ORDER BY record_year, record_month; |
 | Load_reg_segmentation | Load region segmentation data to PostgreSQL | Connect to mart.region_segmentation in superstore_dmart |
+
+#### Entitity Relationship Diagram
+Data Warehouse in this project is modelled in Star Schema. Star Schema is a modelling for data warehouse which consists of a fact table built from two dimension tables or more. This schema often used for analysis that specific on a subject only.
+
+### Access Request
+There are few roles that should be given access to the visualization:
+- Head of Marketing and Sales Department -> access to all city and region
+- All of Branch Manager -> access to specific city only
+- All of Region Manager -> access to specific region only
