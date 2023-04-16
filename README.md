@@ -8,6 +8,7 @@ Objective of creation of this dashboard is to give end-to-end visualization to M
 ![tdd](https://user-images.githubusercontent.com/99194827/232273568-569e5e0b-fed9-4bcc-98e8-4e2c56f7e13e.png)
 
 ### Components
+MongoDB and PostgreSQL are activated with this docker-compose [file](https://github.com/ahmdxrzky/binar-bie1/blob/main/docker-compose.yaml).
 #### Connection & Location
 Data Source for this project is located on company's data lake. Company utilize **MongoDB**, a NoSQL Database, as Data Lake. It can be accessed in company's server (a Virtual Machine), exposed at port **27017**. There is 3 databases from the data lake that used in this project, which are **db_customers** (contains identity of customers), **db_products** (contains detail of products), and **db_orders** (contains record of orders).
 #### Server & Storage
@@ -33,7 +34,7 @@ Data from database used as data source for this project. Grant access as viewer 
 
 ### Data Pipeline
 #### Tools
-Data Transformation in this project done with **Pentaho Data Integration** software. We can define all pipeline from extract data from data lake until load data to data marts in a single execution. First, we need to define connection with MongoDB and PostgreSQL. Then, we create step for each process. Last, we schedule a job to run this transformation pipeline every certain time. We can use **Pentaho Server** if we want to run Pentaho job from the app UI or we can utilized common scheduler, such as cron or PM2.
+Data Transformation in this project done with **Pentaho Data Integration** software. We can define all pipeline from extract data from data lake until load data to data marts in a single execution. First, we need to define connection with MongoDB and PostgreSQL. Then, we create step for each process in a [Pentaho transformation diagram](https://github.com/ahmdxrzky/binar-bie1/blob/main/bie1_project.ktr). Last, we schedule a job to run this transformation pipeline every certain time. We can use **Pentaho Server** if we want to run Pentaho job from the app UI or we can utilized common scheduler, such as cron or PM2.
 
 #### Diagram
 ![image](https://user-images.githubusercontent.com/99194827/232277932-0e84eab2-e904-45b5-a0bc-3186612f8bb5.png)
@@ -100,7 +101,7 @@ People that involved in building this project:
 ### Technical Dependencies
 - Pentaho job to process data from Data Lake to Data Marts will start to be executed at 8 AM GMT+7 in each day.
 - Customers' identity are all valid and complete.
-- Products' detail are complete, but there are 32 invalid data. These data said to be invalid because they have same product_id with 32 other items (a product_id refers to two different products). After further confirmation to Head of Marketing and Sales Department, for each product_id, the valid one is the newer product. So, we can delete old product for each product_id. This elimination stage is not included in Pentaho job.
+- Products' detail are complete, but there are 32 invalid data. These data said to be invalid because they have same product_id with 32 other items (a product_id refers to two different products). After further confirmation to Head of Marketing and Sales Department, for each product_id, the valid one is the newer product. So, we can delete old product for each product_id. This elimination stage is [not included](https://github.com/ahmdxrzky/binar-bie1/blob/main/ingest_raw.ipynb) in Pentaho job.
 
 ### Non-Technical Dependencies
 Anomaly on data has being communicated with user, which is Head of Marketing and Sales Department).
