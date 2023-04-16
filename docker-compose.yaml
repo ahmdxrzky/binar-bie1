@@ -1,0 +1,37 @@
+version: '3.3'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "8020:27017"
+    restart: always
+    volumes:
+      - /home/rizky/volume/mongodb-data:/data/db
+
+  postgresql_dwh:
+    image: postgres:latest
+    container_name: postgresql_dwh
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: postgres
+      POSTGRES_DB: superstore_dwh
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - /home/rizky/volume/postgres-dwh:/var/lib/postgresql/data
+
+  postgresql_dmart:
+    image: postgres:latest
+    container_name: postgresql_dmart
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: postgres
+      POSTGRES_DB: superstore_dmart
+    ports:
+      - "5433:5432"
+    restart: always
+    volumes:
+      - /home/rizky/volume/postgres-dmart:/var/lib/postgresql/data
