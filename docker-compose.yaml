@@ -5,7 +5,7 @@ services:
     image: mongo:latest
     container_name: mongodb
     ports:
-      - "8020:27017"
+      - "27017:27017"
     restart: always
     volumes:
       - /home/rizky/volume/mongodb-data:/data/db
