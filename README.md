@@ -88,3 +88,18 @@ There are few roles that should be given access to the visualization:
 - Head of Marketing and Sales Department -> access to all city and region
 - All of Branch Manager -> access to specific city only
 - All of Region Manager -> access to specific region only
+
+# Resources Requirement
+### Department & Staff
+People that involved in building this project:
+- Head of Marketing and Sales Department
+- Business Intelligence Engineer
+- Business Intelligence Analyst
+
+### Technical Dependencies
+- Pentaho job to process data from Data Lake to Data Marts will start to be executed at 8 AM GMT+7 in each day.
+- Customers' identity are all valid and complete.
+- Products' detail are complete, but there are 32 invalid data. These data said to be invalid because they have same product_id with 32 other items (a product_id refers to two different products). After further confirmation to Head of Marketing and Sales Department, for each product_id, the valid one is the newer product. So, we can delete old product for each product_id. This elimination stage is not included in Pentaho job.
+
+### Non-Technical Dependencies
+Anomaly on data has being communicated with user, which is Head of Marketing and Sales Department).
