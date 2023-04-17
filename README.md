@@ -107,4 +107,53 @@ People that involved in building this project:
 Anomaly on data has being communicated with user, which is Head of Marketing and Sales Department).
 
 # Dashboard
-All data marts are visualized in dashboards using **Tableau Desktop**. It can be shared to other stakeholders if we deployed the dashboard to **Tableau Server**.
+All data marts are visualized in 4 different dashboards (based on timeframe) using **Tableau Desktop**. It can be shared to other stakeholders if we deployed the dashboard to **Tableau Server**. File for workbook and dashboard layout is [here](https://github.com/ahmdxrzky/binar-bie1/blob/main/bie1_project.twb).
+
+### Daily Dashboard
+#### Initial (no filter)
+![Screenshot (70)](https://user-images.githubusercontent.com/99194827/232369887-6535c601-1208-49af-a0ea-4af4059923c3.png)
+
+#### Apply filter "Date"
+![Screenshot (71)](https://user-images.githubusercontent.com/99194827/232369938-759d4fa7-d0d0-4e79-b03d-9574da07feac.png)
+On November 24th, 2014, there are **19** sales that produce net sales equal to **4206.97** US dollars.
+
+#### Apply filter "City" and "Region"
+![Screenshot (73)](https://user-images.githubusercontent.com/99194827/232369953-6b6a494c-4dda-4c53-93f3-ca351685de74.png)
+On November 24th, 2014, there is a region in Columbus city which located in **East Columbus**. This region has **2** products that produce loss.
+
+### Monthly Dashboard
+#### Initial (no filter)
+![Screenshot (75)](https://user-images.githubusercontent.com/99194827/232369961-d56f77e4-287d-412c-a645-102746ac22bf.png)
+
+#### Apply filter "Year", "Month", and "Date Range"
+![Screenshot (79)](https://user-images.githubusercontent.com/99194827/232369970-769adca0-51ef-4a01-90fc-53fe3f1f8ea6.png)
+On September 2015, there are **293** sales that produce net sales equal to **56915.14** US dollars. Compared to August 2015 (the previous month), this month has growth percentage equal to **75.06%**.
+
+#### Apply filter "City"
+![Screenshot (80)](https://user-images.githubusercontent.com/99194827/232369974-4bf45558-f076-40c4-974c-db103855849b.png)
+On September 2015, there are **2** region (67%) in Columbus city that belong to "Kategori I" and **1** region (33%) belongs to "Kategori II".
+
+#### Apply filter "Region"
+![Screenshot (81)](https://user-images.githubusercontent.com/99194827/232369984-f4b00897-c65c-493b-b4b3-424bab3c85f8.png)
+On September 2015, East Columbus region which belongs to "Kategori I" has **5** different products with their categories. 1 product belongs to "1st Product" and "2nd Product", respectively and the other 3 products belong to "3rd Product" (20%:20%:60%).
+
+### Quarterly Dashboard
+#### Initial (no filter)
+![Screenshot (85)](https://user-images.githubusercontent.com/99194827/232369991-d1757272-f184-4e5e-ad65-964efb496725.png)
+
+#### Apply filter "Year", "Quarter", and "Month Range"
+![Screenshot (86)](https://user-images.githubusercontent.com/99194827/232370004-00e3976d-c86e-4057-9106-04313bfa706e.png)
+On 3rd Quarter of 2015, there are **592** sales that produce net sales equal to **113725.88** US dollars. Compared to 2nd Quarter of 2015 (the previous quarter), this quarter has growth percentage equal to **46.16%**.
+
+#### Apply filter "Customer Segment"
+![Screenshot (87)](https://user-images.githubusercontent.com/99194827/232370011-13522396-8622-4de4-866e-0b47db9aedca.png)
+On 3rd Quarter of 2015, there are many customers that belong to "Gold" category. We should consider to give them bonus to maintain their loyalty to the company.
+
+### Yearly Dashboard
+#### Initial (no filter)
+![Screenshot (90)](https://user-images.githubusercontent.com/99194827/232370018-8167927c-3a24-48fe-b4fb-578cd0e3b3f5.png)
+In total (not based on the year), this company has growth percentage from 2014 to 2017 equal to **133.77%**. Its actual sales value equal to **1.972 million** US dollars with budget (target) sales value equal to **1.474 million** US dollars.
+
+#### Apply filter "Year"
+![Screenshot (91)](https://user-images.githubusercontent.com/99194827/232370024-b117435e-ca12-4a62-8832-162170f470c0.png)
+On 2015, there are **2102** sales that produce net sales equal to **407671.32** US dollars. Compared to 2014 (the previous year), this year has growth percentage equal to **53.88%**.
